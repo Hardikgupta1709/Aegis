@@ -1,0 +1,12 @@
+# Environments
+venv/
+.env
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+# Data (Never commit synthetic data to GitHub in case it gets huge)
+data/*.csv
+data/*.parquet
+# Jupyter
+.ipynb_checkpoints/

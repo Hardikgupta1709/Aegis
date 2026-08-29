@@ -1,4 +1,5 @@
 import time
+import asyncio
 import pandas as pd
 import joblib
 import os
@@ -39,18 +40,8 @@ MERCHANT_RULES = [] # Confirmed rules
 PENDING_RULE = None # Rule waiting for "YES" confirmation
 AUDIT_LOG_FILE = os.path.join(os.path.dirname(__file__), 'audit_log.txt')
 
-# --- FRONTEND ENDPOINTS ---
-@app.get("/", response_class=HTMLResponse)
-async def serve_frontend():
-    """Serves our custom HTML dashboard."""
-    html_path = os.path.join(os.path.dirname(__file__), 'index.html')
-    with open(html_path, 'r') as f:
-        return f.read()
-
-@app.get("/active_rules")
-async def get_rules():
-    """Lets the frontend UI see what rules were added via WhatsApp."""
-    return {"rules": MERCHANT_RULES}
+# --- FRONTEND ENDPOINTS REMOVED ---
+# To maintain the "Zero Dashboard" core pitch, Aegis runs purely via API and WhatsApp.
 
 # --- CORE LOGIC ---
 class CheckoutPayload(BaseModel):

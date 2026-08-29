@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aegis | Risk Operations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #4B5563; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-gray-50 flex h-screen overflow-hidden">
+
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-[#0A1128] text-white flex flex-col shadow-2xl z-20">
+        <div class="p-6 border-b border-gray-800 flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-xl">A</div>
+            <h1 class="text-xl font-bold tracking-tight">Aegis <span class="text-blue-400 text-sm font-normal block">Risk Ops</span></h1>
+        </div>
+        <nav class="flex-1 p-4 space-y-2 text-sm text-gray-400">
+            <a href="#" class="flex items-center gap-3 bg-blue-600/10 text-blue-400 px-4 py-3 rounded-lg border border-blue-600/20">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Live Gateway
+            </a>
+            <a href="#" class="flex items-center gap-3 hover:bg-gray-800 hover:text-white px-4 py-3 rounded-lg transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                Analytics & Profit
+            </a>
+            <a href="#" class="flex items-center gap-3 hover:bg-gray-800 hover:text-white px-4 py-3 rounded-lg transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                WhatsApp Config
+            </a>
+        </nav>
+        <div class="p-4 border-t border-gray-800 text-xs text-gray-500">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                System Operational
+            </div>
+            Razorpay Buildathon Demo
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden">
+        
+        <!-- HEADER -->
+        <header class="bg-white border-b border-gray-200 px-8 py-5 flex justify-between items-center z-10">
+            <h2 class="text-xl font-semibold text-gray-800">Gateway Simulator</h2>
+            <div class="flex gap-4">
+                <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-md text-sm border border-gray-200">Mode: <strong>Test</strong></span>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- LEFT COLUMN: CHECKOUT SIMULATOR -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-blue-600"></div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                            New Order
+                        </h3>
+                        
+                        <div class="space-y-5">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Customer Profile (Test Logic)</label>
+                                <select id="customer_profile" class="w-full rounded-lg border-gray-300 shadow-sm p-2.5 text-sm border focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50">
+                                    <option value="safe">Safe Customer (Low RTO Risk)</option>
+                                    <option value="rto_risk">Suspicious (High RTO Risk)</option>
+                                    <option value="bot">Bot Network (High Fraud Risk)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Order Amount (₹)</label>
+                                <input type="number" id="order_amount" value="4500" class="w-full rounded-lg border-gray-300 shadow-sm p-2.5 text-sm border focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Payment Method</label>
+                                <select id="payment_method" class="w-full rounded-lg border-gray-300 shadow-sm p-2.5 text-sm border focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="0">Cash on Delivery (COD)</option>
+                                    <option value="1">Prepaid (Card/UPI)</option>
+                                </select>
+                            </div>
+
+                            <button onclick="submitCheckout()" id="pay_btn" class="w-full bg-[#0A1128] hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 flex justify-center items-center gap-2">
+                                Evaluate Risk & Process
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- WHATSAPP RULES WIDGET -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center">
+                            <h3 class="text-sm font-bold text-gray-700 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                Live Policies
+                            </h3>
+                            <button onclick="fetchRules()" class="text-xs font-semibold text-blue-600 hover:text-blue-800">Sync</button>
+                        </div>
+                        <div class="p-4 bg-white">
+                            <ul id="rules_list" class="text-xs space-y-3 font-mono text-gray-700">
+                                <li class="text-gray-400 italic">No rules active. Model running purely on ML...</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: RESULTS & LOGS -->
+                <div class="lg:col-span-8 flex flex-col gap-6">
+                    
+                    <!-- HUGE DECISION CARD -->
+                    <div id="result_box" class="bg-white p-10 rounded-2xl shadow-sm border border-gray-200 flex flex-col justify-center items-center text-center transition-all duration-300 min-h-[300px]">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-400 mb-2">Awaiting Transaction</h2>
+                        <p class="text-gray-500">Configure the checkout parameters and hit evaluate.</p>
+                    </div>
+
+                    <!-- API TERMINAL / LOGS -->
+                    <div class="bg-[#1E1E1E] rounded-2xl shadow-xl border border-gray-800 overflow-hidden flex-1 flex flex-col">
+                        <div class="bg-[#2D2D2D] px-4 py-2 flex items-center gap-2 border-b border-gray-700">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            <span class="ml-4 text-xs font-mono text-gray-400">Gateway API Logs</span>
+                        </div>
+                        <div class="p-4 font-mono text-xs text-gray-300 overflow-y-auto custom-scrollbar h-64 whitespace-pre-wrap" id="api_logs">
+> System ready.
+> Waiting for payload...
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Fetch active rules continuously
+        async function fetchRules() {
+            try {
+                const res = await fetch('/active_rules');
+                const data = await res.json();
+                const list = document.getElementById('rules_list');
+                if (data.rules.length === 0) {
+                    list.innerHTML = '<li class="text-gray-400 italic">No rules active. Model running purely on ML...</li>';
+                    return;
+                }
+                list.innerHTML = '';
+                data.rules.forEach(r => {
+                    list.innerHTML += `<li class="bg-gray-50 p-2 border border-gray-200 rounded-md shadow-sm"><span class="text-blue-600 font-bold">IF</span> [${r.condition_feature} ${r.operator} ${r.threshold_value}] <br><span class="text-blue-600 font-bold">THEN</span> [${r.action}]</li>`;
+                });
+            } catch (e) {
+                console.log("Error fetching rules.");
+            }
+        }
+        fetchRules();
+        setInterval(fetchRules, 5000); 
+
+        function logToTerminal(message, type="info") {
+            const logs = document.getElementById('api_logs');
+            const color = type === "req" ? "text-blue-400" : type === "res" ? "text-green-400" : "text-gray-300";
+            logs.innerHTML += `\n<span class="${color}">${message}</span>`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        async function submitCheckout() {
+            const box = document.getElementById('result_box');
+            const btn = document.getElementById('pay_btn');
+            
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processing...`;
+            box.className = "bg-white p-10 rounded-2xl shadow-sm border border-gray-200 flex flex-col justify-center items-center text-center transition-all duration-300 min-h-[300px] opacity-70";
+            
+            // Logic to populate hidden fields based on Customer Profile
+            const profile = document.getElementById('customer_profile').value;
+            let fuzziness = 0.1;
+            let past_rto = 0.0;
+            let is_new = 0;
+            let velocity = 1;
+
+            if (profile === "rto_risk") { fuzziness = 0.8; past_rto = 0.6; }
+            if (profile === "bot") { velocity = 6; is_new = 1; }
+
+            const payload = {
+                "order_id": "ORD-" + Math.floor(Math.random() * 100000),
+                "sector": 0, // Fashion default
+                "order_amount": parseFloat(document.getElementById('order_amount').value),
+                "payment_method": parseInt(document.getElementById('payment_method').value),
+                "device_velocity_1h": velocity, 
+                "is_new_account": is_new, 
+                "ip_pincode_match": 1,
+                "address_fuzziness": fuzziness, 
+                "time_to_checkout_sec": 45, 
+                "past_rto_rate": past_rto,
+                "customer_name_length": 12, 
+                "day_of_week": 3
+            };
+
+            logToTerminal(`\n> POST /evaluate_risk\n${JSON.stringify(payload, null, 2)}`, "req");
+
+            try {
+                const response = await fetch('/evaluate_risk', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                logToTerminal(`> 200 OK (${result.latency_ms}ms)\n${JSON.stringify(result, null, 2)}`, "res");
+
+                let bgColor = "bg-[#F0FDF4] border-[#BBF7D0]";
+                let icon = `<div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6 text-4xl shadow-inner border border-green-200">✅</div>`;
+                let decisionText = "Approved (Fast-Track)";
+                let textColor = "text-green-800";
+                let badge = "ML DECISION";
+
+                if (result.decision === "block_cod") {
+                    bgColor = "bg-[#FEF2F2] border-[#FECACA]";
+                    icon = `<div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6 text-4xl shadow-inner border border-red-200">🛑</div>`;
+                    decisionText = "Transaction Blocked";
+                    textColor = "text-red-700";
+                    if (result.reason.includes("WhatsApp")) badge = "WHATSAPP RULE OVERRIDE";
+                } else if (result.decision === "require_prepay") {
+                    bgColor = "bg-[#FEFCE8] border-[#FEF08A]";
+                    icon = `<div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mb-6 text-4xl shadow-inner border border-yellow-200">⚠️</div>`;
+                    decisionText = "Downgraded to PrePay";
+                    textColor = "text-yellow-700";
+                }
+
+                box.className = `p-10 rounded-2xl shadow-md border flex flex-col justify-center items-center text-center transition-all duration-300 min-h-[300px] ${bgColor}`;
+                box.innerHTML = `
+                    <span class="bg-black/5 text-gray-800 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-6 border border-black/10">${badge}</span>
+                    ${icon}
+                    <h3 class="text-3xl font-extrabold ${textColor} mb-3">${decisionText}</h3>
+                    <p class="text-base text-gray-700 font-medium w-3/4 mb-6 leading-relaxed bg-white/50 p-4 rounded-xl border border-white/50">${result.reason}</p>
+                    <div class="flex gap-4">
+                        <div class="bg-white/80 px-4 py-2 rounded-lg text-sm font-mono text-gray-600 border border-black/5 shadow-sm">
+                            Latency: <span class="font-bold text-gray-900">${result.latency_ms} ms</span>
+                        </div>
+                        <div class="bg-white/80 px-4 py-2 rounded-lg text-sm font-mono text-gray-600 border border-black/5 shadow-sm">
+                            ID: <span class="font-bold text-gray-900">${result.order_id}</span>
+                        </div>
+                    </div>
+                `;
+            } catch (e) {
+                logToTerminal(`> Error connecting to backend.`, "res");
+            }
+
+            btn.innerHTML = `Evaluate Risk & Process`;
+        }
+    </script>
+</body>
+</html>

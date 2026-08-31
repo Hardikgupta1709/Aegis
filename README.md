@@ -7,6 +7,9 @@ Thirdwatch (and similar risk engines) are world-class at device fingerprinting a
 
 **Aegis is the decision-and-communication layer.** We do not replace Thirdwatch. We turn its risk signals into executed policies, communicated in plain language over WhatsApp, without the merchant ever opening a dashboard.
 
+## Roadmap (Not Yet Built)
+- **Voice Notes**: Routing audio via Twilio Media through Whisper/Gemini to extract risk rules deterministically.
+
 ## The Two-Bucket Loss Problem
 We do not conflate "RTO" with "Fraud". 60% of Indian ecommerce is COD. While ~26% of COD orders return to origin, only 8-10% of that is malicious fraud. The rest is logistics failure and impulse buying. Aegis tackles both, but treats them differently.
 

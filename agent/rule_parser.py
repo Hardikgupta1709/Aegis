@@ -72,7 +72,8 @@ def parse_merchant_chat(user_message: str, merchant_id: str = "default") -> Merc
                     print(f"Network 503 spike. Retrying attempt {attempt+2} in {2**attempt}s...")
                     time.sleep(2 ** attempt)
                 else:
-                    print(f"Gemini failed after {attempt+1} attempts: {e}")
+                    print(f"\n❌ [CRITICAL ERROR] Gemini API exhausted after {attempt+1} attempts: {e}")
+                    print("⚠️  TRIGGERING GRACEFUL FALLBACK REPLY TO MERCHANT ⚠️\n")
                     return MerchantRule(
                         action="unknown", condition_feature="none", operator="none", threshold_value="none",
                         confirmation_message="I'm sorry, I'm currently overloaded. Please try again in a moment."

@@ -70,65 +70,74 @@ STOP_PHRASES = {"stop", "pause aegis", "pause"}
 RESUME_PHRASES = {"resume", "resume aegis", "start"}
 
 PROCESSED_MESSAGES = set()
+idempotency_lock = asyncio.Lock()
 
 @app.post("/whatsapp")
 async def whatsapp_webhook(Body: str = Form(""), From: str = Form("default"), MessageSid: str = Form(None), NumMedia: int = Form(0)):
     global PENDING_RULE
     
-    # Idempotency check: Twilio retries if the webhook takes too long (e.g. 503 backoff)
-    if MessageSid and MessageSid in PROCESSED_MESSAGES:
-        print(f"[WHATSAPP RCV] Dropping duplicate Twilio retry for {MessageSid}")
-        return Response(content="<Response></Response>", media_type="application/xml")
-    if MessageSid:
-        PROCESSED_MESSAGES.add(MessageSid)
+    # Idempotency check: Safe by construction across yields
+    async with idempotency_lock:
+        if MessageSid and MessageSid in PROCESSED_MESSAGES:
+            print(f"[WHATSAPP RCV] Dropping duplicate Twilio retry for {MessageSid}")
+            return Response(content="<Response></Response>", media_type="application/xml")
+        if MessageSid:
+            PROCESSED_MESSAGES.add(MessageSid)
         
     merchant_id = From
     print(f"\n[WHATSAPP RCV] Message from Merchant [{merchant_id}]: {Body}")
     
-    twiml_response = MessagingResponse()
-    
-    if NumMedia > 0:
-        twiml_response.message("I can only read text right now. Please type your message.")
-        return Response(content=str(twiml_response), media_type="application/xml")
+    try:
+        twiml_response = MessagingResponse()
         
-    body_lower = Body.strip().lower()
-    
-    if body_lower in STOP_PHRASES:
-        PAUSED[merchant_id] = True
-        twiml_response.message("Aegis paused. All orders will use the safe default until you reply RESUME.")
-        return Response(content=str(twiml_response), media_type="application/xml")
-        
-    if body_lower in RESUME_PHRASES:
-        PAUSED[merchant_id] = False
-        twiml_response.message("Aegis resumed. Back to normal operation.")
-        return Response(content=str(twiml_response), media_type="application/xml")
-    
-    if body_lower in ["yes", "y"] and PENDING_RULE is not None:
-        MERCHANT_RULES.append(PENDING_RULE)
-        rule_desc = f"{PENDING_RULE['condition_feature']} {PENDING_RULE['operator']} {PENDING_RULE['threshold_value']} -> {PENDING_RULE['action']}"
-        append_to_audit_log(f"Merchant CONFIRMED rule: {rule_desc}")
-        
-        PENDING_RULE = None
-        twiml_response.message("Rule confirmed and is now active on the gateway.")
-        return Response(content=str(twiml_response), media_type="application/xml")
-        
-    rule = parse_merchant_chat(Body, merchant_id)
-    
-    if rule.action != "unknown":
-        try:
-            val = float(rule.threshold_value.replace(',', '').replace('₹', ''))
-        except:
-            val = rule.threshold_value
+        if NumMedia > 0:
+            twiml_response.message("I can only read text right now. Please type your message.")
+            return Response(content=str(twiml_response), media_type="application/xml")
             
-        PENDING_RULE = {
-            "action": rule.action,
-            "condition_feature": rule.condition_feature,
-            "operator": rule.operator,
-            "threshold_value": val
-        }
+        body_lower = Body.strip().lower()
         
-    twiml_response.message(rule.confirmation_message)
-    return Response(content=str(twiml_response), media_type="application/xml")
+        if body_lower in STOP_PHRASES:
+            PAUSED[merchant_id] = True
+            twiml_response.message("Aegis paused. All orders will use the safe default until you reply RESUME.")
+            return Response(content=str(twiml_response), media_type="application/xml")
+            
+        if body_lower in RESUME_PHRASES:
+            PAUSED[merchant_id] = False
+            twiml_response.message("Aegis resumed. Back to normal operation.")
+            return Response(content=str(twiml_response), media_type="application/xml")
+        
+        if body_lower in ["yes", "y"] and PENDING_RULE is not None:
+            MERCHANT_RULES.append(PENDING_RULE)
+            rule_desc = f"{PENDING_RULE['condition_feature']} {PENDING_RULE['operator']} {PENDING_RULE['threshold_value']} -> {PENDING_RULE['action']}"
+            append_to_audit_log(f"Merchant CONFIRMED rule: {rule_desc}")
+            
+            PENDING_RULE = None
+            twiml_response.message("Rule confirmed and is now active on the gateway.")
+            return Response(content=str(twiml_response), media_type="application/xml")
+            
+        rule = parse_merchant_chat(Body, merchant_id)
+        
+        if rule.action != "unknown":
+            try:
+                val = float(rule.threshold_value.replace(',', '').replace('₹', ''))
+            except:
+                val = rule.threshold_value
+                
+            PENDING_RULE = {
+                "action": rule.action,
+                "condition_feature": rule.condition_feature,
+                "operator": rule.operator,
+                "threshold_value": val
+            }
+            
+        twiml_response.message(rule.confirmation_message)
+        return Response(content=str(twiml_response), media_type="application/xml")
+        
+    except Exception as e:
+        print(f"\n❌ [UNHANDLED WEBHOOK EXCEPTION] {e}")
+        twiml_response = MessagingResponse()
+        twiml_response.message("I'm sorry, I encountered an unexpected error. Please try again later.")
+        return Response(content=str(twiml_response), media_type="application/xml")
 
 @app.post("/razorpay_webhook")
 async def razorpay_webhook(request: Request):
@@ -162,7 +171,7 @@ async def razorpay_webhook(request: Request):
         is_new_account=1,
         ip_pincode_match=1,
         address_fuzziness=fuzziness,
-        time_to_checkout_sec=15.0,
+        time_to_checkout_sec=45.0,
         past_rto_rate=past_rto_rate,
         customer_name_length=12,
         day_of_week=3
@@ -207,10 +216,11 @@ async def evaluate_risk(payload: CheckoutPayload):
 
     df = pd.DataFrame([payload.model_dump(exclude={'order_id'})])
     expected_cols = ['sector', 'order_amount', 'payment_method', 'device_velocity_1h', 'is_new_account', 'ip_pincode_match', 'address_fuzziness', 'time_to_checkout_sec', 'past_rto_rate', 'customer_name_length', 'day_of_week']
-    rto_prob = model.predict_proba(df[expected_cols])[0][2]
+    probs = model.predict_proba(df[expected_cols])[0]
+    fraud_prob = probs[1]
     
     # 4. PLAIN-ENGLISH REASON CODES & THRESHOLDING
-    if rto_prob >= effective_threshold:
+    if fraud_prob >= effective_threshold:
         decision = "require_prepay" 
         
         # Build plain-English reason based on top contributing factors
@@ -219,12 +229,12 @@ async def evaluate_risk(payload: CheckoutPayload):
         if payload.past_rto_rate > 0.3: factors.append("poor historical delivery record")
         if payload.device_velocity_1h > 3: factors.append("suspicious order velocity")
         
-        reason_str = ", ".join(factors) if factors else f"Pattern match (Score: {rto_prob:.2f})"
+        reason_str = ", ".join(factors) if factors else f"Pattern match (Score: {fraud_prob:.2f})"
         
         reason = f"High RTO Risk due to {reason_str}. Downgraded to PrePay COD."
     else:
         decision = "allow_fast_track"
-        reason = f"Low Risk (Score: {rto_prob:.2f}). Approved for COD."
+        reason = f"Low Risk (Score: {fraud_prob:.2f}). Approved for COD."
         
     return {
         "order_id": payload.order_id,

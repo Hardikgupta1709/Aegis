@@ -7,6 +7,8 @@ Thirdwatch (and similar risk engines) are world-class at device fingerprinting a
 
 **Aegis is the decision-and-communication layer.** We do not replace Thirdwatch. We turn its risk signals into executed policies, communicated in plain language over WhatsApp, without the merchant ever opening a dashboard.
 
+**In production, Aegis would sit as an enrichment layer**, computing velocity and address signals server-side from the raw checkout event and phone number. For today's demo, we simulate those enriched values arriving in the payload, allowing us to drop perfectly into a standard D2C stack.
+
 ## Roadmap (Not Yet Built)
 - **Voice Notes**: Routing audio via Twilio Media through Whisper/Gemini to extract risk rules deterministically.
 
